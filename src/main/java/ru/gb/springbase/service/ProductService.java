@@ -2,43 +2,44 @@ package ru.gb.springbase.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import ru.gb.springbase.model.Product;
 import ru.gb.springbase.repository.ProductRepository;
 
 import java.util.List;
 
-@Component
+@Service
 public class ProductService {
 
     @Autowired
     private ProductRepository repository;
 
     public Product add(Product product) {
-        return repository.add(product);
+        return repository.save(product);
     }
 
-    public Product getProduct(int id) {
-        return repository.get(id);
+    public Product getProduct(Long id) {
+        return repository.findById(id).orElseThrow();
     }
 
     public List<Product> getProducts() {
-        return repository.getProducts();
+        return repository.findAll();
     }
 
     public void update(Product product) {
-        repository.update(product);
+        repository.save(product);
     }
 
-    public void delete(int id) {
-        repository.delete(id);
+    public void deleteById(Long id) {
+        repository.deleteById(id);
     }
 
     public int totalProducts() {
-        return repository.getProducts().size();
+        return repository.findAll().size();
     }
 
     public double averageCost() {
-        return repository.getProducts().stream()
+        return repository.findAll().stream()
                 .mapToDouble(Product::getCost)
                 .average()
                 .orElse(Double.NaN);
