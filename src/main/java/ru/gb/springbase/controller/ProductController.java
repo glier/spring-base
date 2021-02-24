@@ -21,6 +21,12 @@ public class ProductController {
         return "products";
     }
 
+    @GetMapping(value = "/{id}")
+    public String allProducts(@PathVariable Long id, Model model) {
+        model.addAttribute("product", service.getProduct(id));
+        return "product";
+    }
+
     @PostMapping("/add")
     public String addNewProduct(@ModelAttribute Product product) {
         service.add(product);
