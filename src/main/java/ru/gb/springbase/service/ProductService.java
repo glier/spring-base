@@ -3,6 +3,7 @@ package ru.gb.springbase.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import ru.gb.springbase.exception.NoDataFoundException;
 import ru.gb.springbase.model.Product;
 import ru.gb.springbase.repository.ProductRepository;
 
@@ -19,7 +20,7 @@ public class ProductService {
     }
 
     public Product getProduct(Long id) {
-        return repository.findById(id).orElseThrow();
+        return repository.findById(id).orElseThrow(() -> new NoDataFoundException("Product id: " + id));
     }
 
     public List<Product> getProducts() {
