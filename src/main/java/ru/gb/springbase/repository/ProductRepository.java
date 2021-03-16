@@ -1,46 +1,19 @@
 package ru.gb.springbase.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 import ru.gb.springbase.model.Product;
 
-@Repository
-public interface ProductRepository extends JpaRepository<Product, Long> {
-//    private List<Product> products;
-//    private static int sequence = 0;
-//
-//    public ProductRepository() {
-//        this.products = new ArrayList<>();
-//    }
-//
-//    public Product add(Product product) {
-//        product.setId(++sequence);
-//        products.add(product);
-//        return product;
-//    }
-//
-//    public Product get(int id) {
-//        return products.stream()
-//                .filter(p -> p.getId() == id)
-//                .findAny()
-//                .orElseThrow(RuntimeException::new);
-//    }
-//
-//    public List<Product> getProducts() {
-//        return products;
-//    }
-//
-//    public void update(Product product) {
-//        products.stream()
-//                .filter(p -> p.getId().equals(product.getId()))
-//                .forEach(p -> {
-//                    p.setTitle(product.getTitle());
-//                    p.setCost(product.getCost());
-//                });
-//    }
-//
-//    public void delete(int id) {
-//        products.removeIf(product -> product.getId() == id);
-//    }
+import java.util.List;
 
+@Repository
+public interface ProductRepository extends JpaRepository<Product, Long>, PagingAndSortingRepository<Product, Long> {
+    List<Product> findProductsByCostLessThanEqual(Integer cost);
+    List<Product> findProductsByCostGreaterThanEqual(Integer cost);
+    List<Product> findProductsByCostBetween(Integer costMin, Integer costMax);
+    List<Product> findProductsByTitleContainsIgnoreCase(String title);
+    Page<Product> findProductsByCostBetweenAndTitleContainsIgnoreCase(Integer costMin, Integer costMax, String title, Pageable pageable);
 }

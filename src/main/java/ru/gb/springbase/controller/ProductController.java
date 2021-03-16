@@ -1,13 +1,15 @@
 package ru.gb.springbase.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import ru.gb.springbase.model.Product;
 import ru.gb.springbase.service.ProductService;
 
-@Controller
+
+import java.util.Map;
+
+@RestController
 @RequestMapping("/product")
 public class ProductController {
 
@@ -15,27 +17,46 @@ public class ProductController {
     private ProductService service;
 
     @GetMapping(value = "/all")
-    public String allProducts(Model model) {
-        model.addAttribute("products", service.getProducts());
-        model.addAttribute("totalProducts", service.totalProducts());
-        return "products";
+    public Page<Product> allProducts(@RequestParam(required = false, defaultValue = "1") Integer page,
+                                     @RequestParam(required = false, defaultValue = "5") Integer pageSize,
+                                     @RequestParam Map<String, String> params) {
+        return service.findAll(page, pageSize, params);
     }
 
     @GetMapping(value = "/{id}")
-    public String allProducts(@PathVariable Long id, Model model) {
-        model.addAttribute("product", service.getProduct(id));
-        return "product";
+    public Product getProductById(@PathVariable Long id) {
+        return service.findById(id);
     }
 
     @PostMapping("/add")
-    public String addNewProduct(@ModelAttribute Product product) {
-        service.add(product);
-        return "redirect:/product/all";
+    public Product addNewProduct(@RequestBody Product product) {
+        return service.save(product);
     }
 
-    @GetMapping("/remove/{id}")
-    public String deleteProductById(@PathVariable Long id) {
-        service.deleteById(id);
-        return "redirect:/product/all";
+    @PutMapping("/update")
+    public Product updateProduct(@RequestBody Product product) {
+        return service.update(product);
     }
+
+    @DeleteMapping("/remove/{id}")
+    public void deleteProductById(@PathVariable Long id) {
+        service.deleteById(id);
+    }
+
+    @DeleteMapping("/remove")
+    public void deleteProduct(@RequestBody Product product) {
+        service.delete(product);
+    }
+
+    @GetMapping
+    public Page<Product> getProductByFilter(@RequestParam(required = false, defaultValue = Integer.MIN_VALUE + "") Integer costGt,
+                                            @RequestParam(required = false, defaultValue = Integer.MAX_VALUE + "") Integer costLt,
+                                            @RequestParam(required = false, defaultValue = "") String title,
+                                            @RequestParam(required = false, defaultValue = "1") Integer page,
+                                            @RequestParam(required = false, defaultValue = "5") Integer pageSize,
+                                            @RequestParam Map<String, String> params) {
+
+        return service.findByFilter(page, pageSize, costGt, costLt, title, params);
+    }
+
 }
