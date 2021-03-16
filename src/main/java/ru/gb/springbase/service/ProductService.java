@@ -7,7 +7,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.gb.springbase.exception.ErrorPageException;
 import ru.gb.springbase.exception.NoDataFoundException;
-import ru.gb.springbase.model.Product;
+import ru.gb.springbase.model.dtos.ProductDto;
+import ru.gb.springbase.model.entities.Product;
 import ru.gb.springbase.repository.ProductRepository;
 
 import java.util.ArrayList;
@@ -20,37 +21,31 @@ public class ProductService {
     @Autowired
     private ProductRepository repository;
 
-    public Product save(Product product) {
+    public Product saveOrUpdate(Product product) {
         return repository.save(product);
     }
 
-    public Page<Product> findAll(Integer page, Integer pageSize, Map<String, String> params) {
-        return repository.findAll(PageRequest.of(page, pageSize, Sort.by(getOrders(params))));
+    public Page<ProductDto> findAll(Integer page, Integer pageSize, Map<String, String> params) {
+        return repository.findAll(PageRequest.of(page, pageSize, Sort.by(getOrders(params)))).map(ProductDto::new);
     }
 
-    public Product findById(Long id) {
-        return repository.findById(id).orElseThrow(() -> new NoDataFoundException("Product id: " + id));
-    }
-
-    public Product update(Product product) {
-        return repository.save(product);
+    public ProductDto findById(Long id) {
+        return repository.findById(id).map(ProductDto::new).orElseThrow(() -> new NoDataFoundException("Product id: " + id));
     }
 
     public void deleteById(Long id) {
         repository.deleteById(id);
     }
 
-    public void delete(Product product) {
-        repository.delete(product);
-    }
-
-    public Page<Product> findByFilter(Integer page, Integer pageSize, Integer costGt, Integer costLt, String title, Map<String, String> params) {
+    public Page<ProductDto> findByFilter(Integer page, Integer pageSize, Integer costGt, Integer costLt, String title, Map<String, String> params) {
         if (page < 1 || pageSize < 1)
             throw new ErrorPageException(page, pageSize, null);
 
         List<Sort.Order> orders = getOrders(params);
 
-        Page<Product> result = repository.findProductsByCostBetweenAndTitleContainsIgnoreCase(costGt, costLt, title, PageRequest.of(page-1, pageSize, Sort.by(orders)));
+        Page<ProductDto> result = repository
+                .findProductsByCostBetweenAndTitleContainsIgnoreCase(costGt, costLt, title, PageRequest.of(page-1, pageSize, Sort.by(orders)))
+                .map(ProductDto::new);
 
         if (result.isEmpty())
             throw new NoDataFoundException("");

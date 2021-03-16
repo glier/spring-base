@@ -67,9 +67,8 @@
                 <configuration>
                     <driver>org.h2.Driver</driver>
                     <baselineOnMigrate>true</baselineOnMigrate>
-                    <url>jdbc:h2:file:./src/main/resources/db/demo</url>
+                    <url>jdbc:h2:mem:mydatabase</url>
                     <user>sa</user>
-                    <password>123</password>
                 </configuration>
             </plugin>
         </plugins>
