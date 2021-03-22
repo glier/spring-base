@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import ru.gb.springbase.model.dtos.ProductDto;
@@ -34,9 +35,10 @@ public class ProductController {
         return service.findById(id);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Product saveNewProduct(@RequestBody ProductDto productDto) {
+    public ProductDto saveNewProduct(@RequestBody ProductDto productDto) {
         productDto.setId(null);
         return service.saveOrUpdate(Product.builder()
                 .cost(productDto.getCost())
@@ -47,11 +49,13 @@ public class ProductController {
                 .title(productDto.getTitle()).build());
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping
-    public Product updateProduct(@RequestBody Product product) {
+    public ProductDto updateProduct(@RequestBody Product product) {
         return service.saveOrUpdate(product);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     public void deleteProductById(@PathVariable Long id) {
         service.deleteById(id);

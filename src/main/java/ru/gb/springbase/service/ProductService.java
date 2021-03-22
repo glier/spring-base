@@ -21,8 +21,8 @@ public class ProductService {
     @Autowired
     private ProductRepository repository;
 
-    public Product saveOrUpdate(Product product) {
-        return repository.save(product);
+    public ProductDto saveOrUpdate(Product product) {
+        return new ProductDto(repository.save(product));
     }
 
     public Page<ProductDto> findAll(Specification<Product> spec, int page, int pageSize) {
